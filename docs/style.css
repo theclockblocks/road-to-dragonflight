@@ -332,6 +332,19 @@ h1 {
 
 /* ---------- Small screens ---------- */
 
+/* The chapter nav is 15 links in a row — wider than a phone. Let it scroll
+   inside itself; otherwise it stretches the whole document wider than the
+   viewport, the page pans sideways, and fixed overlays get dragged off-screen. */
+@media (max-width: 700px) {
+  nav .navlinks {
+    min-width: 0;              /* a flex child will not shrink below its content without this */
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  nav .navlinks::-webkit-scrollbar { display: none; }
+}
+
 @media (max-width: 560px) {
   nav { flex-wrap: wrap; justify-content: center; }
   .article { border-left-width: 2px; padding: 1rem 1.1rem 2.5rem; }

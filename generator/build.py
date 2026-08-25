@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Build the expanded Road to Dragonflight site: 14 chapters + codex + homepage, with link validation."""
-import os, re, sys, shutil
+import os, re, sys, shutil, hashlib
 from pathlib import Path
 BASE = Path(__file__).resolve().parent
 sys.path.insert(0, str(BASE))
@@ -81,8 +81,8 @@ def shell(title, body, accent="#c9a45c"):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 {FONTS}
-<link rel="stylesheet" href="style.css">
-<script src="codex-popup.js" defer></script>
+<link rel="stylesheet" href="style.css?v={CSS_V}">
+<script src="codex-popup.js?v={JS_V}" defer></script>
 </head>
 <body style="--accent:{accent}">
 {body}
@@ -110,112 +110,6 @@ def sources_block(srcs):
             '<p class="sources-note">Primary canon for the ancient eras is the <em>World of Warcraft: Chronicle</em> book series (Blizzard/Dark Horse); the wiki pages above summarize and cite it alongside in-game material.</p></div>')
 
 COLOPHON = '<footer class="colophon">A fan-made lore chronicle. Warcraft, World of Warcraft, and all related characters belong to Blizzard Entertainment. Text written for private reference; sources linked per chapter.</footer>'
-
-# ---------------- chapter pages ----------------
-for i, ch in enumerate(CHAPTERS):
-    body = f"""{nav(ch["slug"])}
-<header class="chapter-head">
-  <p class="eyebrow"><span class="num">{ch["num"]}</span>{ch["era"]}</p>
-  <h1>{ch["title"]}</h1>
-  <p class="sub">{ch["sub"]}</p>
-</header>
-<main class="article">
-{ch["content"]}
-{sources_block(ch["sources"])}
-{prevnext(i)}
-</main>
-{COLOPHON}"""
-    with open(f'{OUT}/{ch["slug"]}.html', "w", encoding="utf-8", newline="\n") as f:
-        f.write(shell(f'{ch["title"]} — The Road to Dragonflight', body, ch["accent"]))
-
-# ---------------- codex page ----------------
-by_cat = {c[0]: [] for c in CATS}
-for entry in CODEX:
-    by_cat[entry[2]].append(entry)
-
-cat_secs = []
-for code, label in CATS:
-    entries = sorted(by_cat[code], key=lambda e: e[1].lower().replace("the ", ""))
-    cards = []
-    for (cid, name, cat, desc, refs) in entries:
-        reflinks = " ".join(
-            f'<a class="ref" href="{num_to_slug[r]}.html" title="{num_to_title[r]}">{r}</a>' for r in refs)
-        look = APPEARANCE.get(cid)
-        lookhtml = f'<p class="look">{look}</p>' if look else ""
-        wiki = WIKI.get(cid)
-        wikihtml = f' <a class="wiki" href="{wiki}" target="_blank" rel="noopener">Art &amp; full article ↗</a>' if wiki else ""
-        cards.append(f'''<article class="codex-entry" id="{cid}">
-<h3>{name}</h3>
-{lookhtml}<p>{desc}</p>
-<p class="refs"><span>Chapters:</span> {reflinks}{wikihtml}</p>
-</article>''')
-    cat_secs.append(f'<section class="codex-cat"><h2 id="cat-{code}">{label}</h2>{"".join(cards)}</section>')
-
-cat_nav = " · ".join(f'<a href="#cat-{code}">{label}</a>' for code, label in CATS)
-
-codex_body = f"""{nav("codex")}
-<header class="chapter-head">
-  <p class="eyebrow"><span class="num">✦</span>Reference index</p>
-  <h1>The Codex</h1>
-  <p class="sub">Every character, people, place, artifact, and term linked from the chapters — with the chapters where each appears. Underlined names throughout the site lead here; your browser's back button returns you to where you were reading.</p>
-</header>
-<main class="article codex">
-<p class="codex-jump">{cat_nav}</p>
-{"".join(cat_secs)}
-</main>
-{COLOPHON}"""
-with open(f"{OUT}/codex.html", "w", encoding="utf-8", newline="\n") as f:
-    f.write(shell("The Codex — The Road to Dragonflight", codex_body))
-
-# ---------------- homepage ----------------
-toc = []
-for ch in CHAPTERS:
-    toc.append(f"""<a class="entry" href="{ch['slug']}.html" style="--a:{ch['accent']}">
-  <span class="entry-node"></span>
-  <span class="entry-body">
-    <span class="entry-era">{ch['era']}</span>
-    <span class="entry-title"><span class="entry-num">{ch['num']}</span> {ch['title']}</span>
-    <span class="entry-sub">{ch['sub']}</span>
-  </span>
-</a>""")
-
-grad = ", ".join(ch["accent"] for ch in CHAPTERS)
-
-home_body = f"""{nav("index")}
-<header class="hero">
-  <p class="eyebrow">A chronicle of Azeroth, from the birth of the cosmos to the Dragon Isles</p>
-  <h1>The Road to<br>Dragonflight</h1>
-  <p class="sub">Everything World of Warcraft never tells you in order — assembled, in order, in fourteen chapters. Written for readers starting from zero.</p>
-</header>
-<main class="article home">
-<section class="howto">
-<h2>How to read this</h2>
-<p>Warcraft's storytelling problem isn't that the lore is bad — it's that it's scattered across three strategy games, ten expansions, a shelf of novels, and quest text nobody reads. This site assembles it into one continuous chronicle. Read front to back like a book, or jump around; every chapter stands on its own, and each carries its own era-color through the site.</p>
-<p><strong>Underlined names are Codex links.</strong> Any character, place, or artifact you don't recognize is one click from its entry in <a href="codex.html">the Codex</a> — a full reference index — and your back button returns you to your place. Each chapter ends with its sources, so any claim can be chased upstream to the wikis and the <em>Chronicle</em> books.</p>
-<p>If you only read three chapters before playing Dragonflight: <strong>III</strong> (who the Aspects and Incarnates are), <strong>XI</strong> (how the Aspects lost their power), and <strong>XIV</strong> (the table as the expansion opens).</p>
-</section>
-<section class="chronicle" style="--grad: linear-gradient(180deg, {grad})">
-{"".join(toc)}
-<a class="entry codex-promo" href="codex.html" style="--a:#c9a45c">
-  <span class="entry-node"></span>
-  <span class="entry-body">
-    <span class="entry-era">Reference index</span>
-    <span class="entry-title"><span class="entry-num">✦</span> The Codex</span>
-    <span class="entry-sub">{len(CODEX)} entries — every character, people, place, artifact, and term, cross-referenced by chapter</span>
-  </span>
-</a>
-</section>
-<section class="tldr">
-<h2>The five-minute version</h2>
-<p>A baby god sleeps inside the planet, and everyone cosmic wants her. The Void hurled four eldritch parasites into the world to corrupt her in her sleep; the titans buried them and ordered the world; and the fallen titan Sargeras built an army of demons to burn every such world before the Void could win one. The titans' keepers raised five dragons as the world's permanent guardians — and the buried gods spent ten thousand years whispering one of them, the Earth-Warder, into becoming Deathwing, the world's own shield turned against it.</p>
-<p>An ancient elf queen's bargain broke the first continent. A corrupted orc race was fired through a portal like a weapon. A golden prince chased a plague until it swallowed him, and his undead kingdom nearly ate the world. The demons came back twice more and were finally destroyed at their own doorstep — but their master left a sword in the planet on his way down. The factions fought a war over the god-blood that wound bled. A banshee queen tore open the sky, and the heroes chased her through the afterlife itself.</p>
-<p>And then, for the first time in twenty years — quiet. Into that quiet, the dragons' ancient homeland relights its beacon. The five guardians, mortal now, their god-given purpose spent killing their own brother, fly home to find out who they are without it — just as the elemental dragons who refused the titans' gift in the first place break out of prison to ask them, pointedly, whether that purpose was ever theirs to begin with.</p>
-<p><em>That's Dragonflight. Welcome home.</em></p>
-</section>
-</main>
-{COLOPHON}"""
-with open(f"{OUT}/index.html", "w", encoding="utf-8", newline="\n") as f:
-    f.write(shell("The Road to Dragonflight — a Warcraft lore chronicle", home_body))
 
 # ---------------- stylesheet ----------------
 shutil.copy(str(BASE / "style_base.css"), f"{OUT}/style.css")
@@ -459,5 +353,118 @@ nav .navlinks a.codexlink { letter-spacing: 0.1em; }
 """
 with open(f"{OUT}/style.css", "a", encoding="utf-8", newline="\n") as f:
     f.write(EXTRA)
+
+
+# Content hashes -> cache-busting query strings. GitHub Pages serves assets
+# with max-age=600, and phone browsers hold them longer still; without this a
+# CSS change can take ages to reach a reader who already has the old file.
+CSS_V = hashlib.md5(Path(f"{OUT}/style.css").read_bytes()).hexdigest()[:8]
+JS_V = hashlib.md5(Path(f"{OUT}/codex-popup.js").read_bytes()).hexdigest()[:8]
+
+# ---------------- chapter pages ----------------
+for i, ch in enumerate(CHAPTERS):
+    body = f"""{nav(ch["slug"])}
+<header class="chapter-head">
+  <p class="eyebrow"><span class="num">{ch["num"]}</span>{ch["era"]}</p>
+  <h1>{ch["title"]}</h1>
+  <p class="sub">{ch["sub"]}</p>
+</header>
+<main class="article">
+{ch["content"]}
+{sources_block(ch["sources"])}
+{prevnext(i)}
+</main>
+{COLOPHON}"""
+    with open(f'{OUT}/{ch["slug"]}.html', "w", encoding="utf-8", newline="\n") as f:
+        f.write(shell(f'{ch["title"]} — The Road to Dragonflight', body, ch["accent"]))
+
+# ---------------- codex page ----------------
+by_cat = {c[0]: [] for c in CATS}
+for entry in CODEX:
+    by_cat[entry[2]].append(entry)
+
+cat_secs = []
+for code, label in CATS:
+    entries = sorted(by_cat[code], key=lambda e: e[1].lower().replace("the ", ""))
+    cards = []
+    for (cid, name, cat, desc, refs) in entries:
+        reflinks = " ".join(
+            f'<a class="ref" href="{num_to_slug[r]}.html" title="{num_to_title[r]}">{r}</a>' for r in refs)
+        look = APPEARANCE.get(cid)
+        lookhtml = f'<p class="look">{look}</p>' if look else ""
+        wiki = WIKI.get(cid)
+        wikihtml = f' <a class="wiki" href="{wiki}" target="_blank" rel="noopener">Art &amp; full article ↗</a>' if wiki else ""
+        cards.append(f'''<article class="codex-entry" id="{cid}">
+<h3>{name}</h3>
+{lookhtml}<p>{desc}</p>
+<p class="refs"><span>Chapters:</span> {reflinks}{wikihtml}</p>
+</article>''')
+    cat_secs.append(f'<section class="codex-cat"><h2 id="cat-{code}">{label}</h2>{"".join(cards)}</section>')
+
+cat_nav = " · ".join(f'<a href="#cat-{code}">{label}</a>' for code, label in CATS)
+
+codex_body = f"""{nav("codex")}
+<header class="chapter-head">
+  <p class="eyebrow"><span class="num">✦</span>Reference index</p>
+  <h1>The Codex</h1>
+  <p class="sub">Every character, people, place, artifact, and term linked from the chapters — with the chapters where each appears. Underlined names throughout the site lead here; your browser's back button returns you to where you were reading.</p>
+</header>
+<main class="article codex">
+<p class="codex-jump">{cat_nav}</p>
+{"".join(cat_secs)}
+</main>
+{COLOPHON}"""
+with open(f"{OUT}/codex.html", "w", encoding="utf-8", newline="\n") as f:
+    f.write(shell("The Codex — The Road to Dragonflight", codex_body))
+
+# ---------------- homepage ----------------
+toc = []
+for ch in CHAPTERS:
+    toc.append(f"""<a class="entry" href="{ch['slug']}.html" style="--a:{ch['accent']}">
+  <span class="entry-node"></span>
+  <span class="entry-body">
+    <span class="entry-era">{ch['era']}</span>
+    <span class="entry-title"><span class="entry-num">{ch['num']}</span> {ch['title']}</span>
+    <span class="entry-sub">{ch['sub']}</span>
+  </span>
+</a>""")
+
+grad = ", ".join(ch["accent"] for ch in CHAPTERS)
+
+home_body = f"""{nav("index")}
+<header class="hero">
+  <p class="eyebrow">A chronicle of Azeroth, from the birth of the cosmos to the Dragon Isles</p>
+  <h1>The Road to<br>Dragonflight</h1>
+  <p class="sub">Everything World of Warcraft never tells you in order — assembled, in order, in fourteen chapters. Written for readers starting from zero.</p>
+</header>
+<main class="article home">
+<section class="howto">
+<h2>How to read this</h2>
+<p>Warcraft's storytelling problem isn't that the lore is bad — it's that it's scattered across three strategy games, ten expansions, a shelf of novels, and quest text nobody reads. This site assembles it into one continuous chronicle. Read front to back like a book, or jump around; every chapter stands on its own, and each carries its own era-color through the site.</p>
+<p><strong>Underlined names are Codex links.</strong> Any character, place, or artifact you don't recognize is one click from its entry in <a href="codex.html">the Codex</a> — a full reference index — and your back button returns you to your place. Each chapter ends with its sources, so any claim can be chased upstream to the wikis and the <em>Chronicle</em> books.</p>
+<p>If you only read three chapters before playing Dragonflight: <strong>III</strong> (who the Aspects and Incarnates are), <strong>XI</strong> (how the Aspects lost their power), and <strong>XIV</strong> (the table as the expansion opens).</p>
+</section>
+<section class="chronicle" style="--grad: linear-gradient(180deg, {grad})">
+{"".join(toc)}
+<a class="entry codex-promo" href="codex.html" style="--a:#c9a45c">
+  <span class="entry-node"></span>
+  <span class="entry-body">
+    <span class="entry-era">Reference index</span>
+    <span class="entry-title"><span class="entry-num">✦</span> The Codex</span>
+    <span class="entry-sub">{len(CODEX)} entries — every character, people, place, artifact, and term, cross-referenced by chapter</span>
+  </span>
+</a>
+</section>
+<section class="tldr">
+<h2>The five-minute version</h2>
+<p>A baby god sleeps inside the planet, and everyone cosmic wants her. The Void hurled four eldritch parasites into the world to corrupt her in her sleep; the titans buried them and ordered the world; and the fallen titan Sargeras built an army of demons to burn every such world before the Void could win one. The titans' keepers raised five dragons as the world's permanent guardians — and the buried gods spent ten thousand years whispering one of them, the Earth-Warder, into becoming Deathwing, the world's own shield turned against it.</p>
+<p>An ancient elf queen's bargain broke the first continent. A corrupted orc race was fired through a portal like a weapon. A golden prince chased a plague until it swallowed him, and his undead kingdom nearly ate the world. The demons came back twice more and were finally destroyed at their own doorstep — but their master left a sword in the planet on his way down. The factions fought a war over the god-blood that wound bled. A banshee queen tore open the sky, and the heroes chased her through the afterlife itself.</p>
+<p>And then, for the first time in twenty years — quiet. Into that quiet, the dragons' ancient homeland relights its beacon. The five guardians, mortal now, their god-given purpose spent killing their own brother, fly home to find out who they are without it — just as the elemental dragons who refused the titans' gift in the first place break out of prison to ask them, pointedly, whether that purpose was ever theirs to begin with.</p>
+<p><em>That's Dragonflight. Welcome home.</em></p>
+</section>
+</main>
+{COLOPHON}"""
+with open(f"{OUT}/index.html", "w", encoding="utf-8", newline="\n") as f:
+    f.write(shell("The Road to Dragonflight — a Warcraft lore chronicle", home_body))
 
 print("site built:", len(os.listdir(OUT)), "files")
