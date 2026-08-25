@@ -1,0 +1,454 @@
+/* The Road to Dragonflight — chronicle stylesheet */
+
+:root {
+  --ink: #131521;
+  --ink-2: #1a1d2c;
+  --panel: #1d2032;
+  --line: #2c3048;
+  --text: #e9e1cd;
+  --muted: #9b937f;
+  --gold: #c9a45c;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation: none !important; transition: none !important; }
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1100px 500px at 50% -10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%),
+    var(--ink);
+  color: var(--text);
+  font-family: "Alegreya", Georgia, "Times New Roman", serif;
+  font-size: 1.075rem;
+  line-height: 1.72;
+}
+
+/* ---------- Navigation ---------- */
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 1.25rem;
+  background: color-mix(in srgb, var(--ink) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+nav .brand {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+nav .navlinks { display: flex; gap: 0.35rem; }
+
+nav .navlinks a {
+  font-family: "Cinzel", serif;
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid transparent;
+  border-radius: 3px;
+}
+
+nav .navlinks a:hover { color: var(--a); border-color: color-mix(in srgb, var(--a) 45%, transparent); }
+nav .navlinks a.here { color: var(--a); border-color: var(--a); }
+
+a:focus-visible, .entry:focus-visible, .pn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ---------- Headers ---------- */
+
+.hero, .chapter-head {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 4.5rem 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.eyebrow {
+  font-family: "Cinzel", serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 1rem;
+}
+
+.eyebrow .num {
+  display: inline-block;
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  padding: 0.1rem 0.5rem;
+  margin-right: 0.8rem;
+}
+
+h1 {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  font-size: clamp(2.1rem, 6vw, 3.4rem);
+  line-height: 1.12;
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+
+.hero h1 {
+  font-size: clamp(2.6rem, 8vw, 4.4rem);
+  background: linear-gradient(180deg, var(--text), var(--gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sub {
+  color: var(--muted);
+  font-size: 1.1rem;
+  font-style: italic;
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+/* ---------- Article ---------- */
+
+.article {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 3rem;
+  border-left: 3px solid color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+.home.article { border-left: none; }
+
+.article h2 {
+  font-family: "Cinzel", serif;
+  font-weight: 500;
+  font-size: 1.35rem;
+  color: var(--accent);
+  margin: 2.4rem 0 0.6rem;
+  line-height: 1.3;
+}
+
+.lede {
+  font-size: 1.2rem;
+  color: color-mix(in srgb, var(--text) 88%, var(--accent));
+}
+
+.lede::first-letter {
+  font-family: "Cinzel", serif;
+  font-size: 3.1em;
+  float: left;
+  line-height: 0.85;
+  padding: 0.05em 0.12em 0 0;
+  color: var(--accent);
+}
+
+.article strong { color: #f4edd9; }
+.article em { color: color-mix(in srgb, var(--text) 80%, var(--accent)); }
+
+.article ul { padding-left: 1.2rem; }
+.article li { margin: 0.5rem 0; }
+.article li::marker { color: var(--accent); }
+
+.aside {
+  margin: 2rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.aside-tag {
+  display: block;
+  font-family: "Cinzel", serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.35rem;
+}
+
+/* ---------- Homepage chronicle ---------- */
+
+.howto, .tldr {
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1.5rem 1.75rem;
+  margin: 1.5rem 0;
+}
+
+.howto h2, .tldr h2 {
+  margin-top: 0;
+  color: var(--gold);
+}
+
+.chronicle {
+  position: relative;
+  margin: 2.5rem 0;
+  padding-left: 1.4rem;
+}
+
+.chronicle::before {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: linear-gradient(180deg, #9a7bdc, #d4634f, #5fa8e0, #7cbf5f, #6fc4c9, #d9a84e);
+  opacity: 0.7;
+}
+
+.entry {
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 1rem 1.25rem;
+  margin: 0.8rem 0;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.entry:hover {
+  border-color: var(--a);
+  transform: translateX(4px);
+}
+
+.entry-node {
+  position: absolute;
+  left: -1.72rem;
+  top: 1.45rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--a);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--a) 70%, transparent);
+}
+
+.entry-era {
+  display: block;
+  font-family: "Cinzel", serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--a);
+}
+
+.entry-title {
+  display: block;
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin: 0.2rem 0;
+}
+
+.entry-num { color: var(--a); margin-right: 0.3rem; }
+
+.entry-sub {
+  display: block;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+/* ---------- Prev / next ---------- */
+
+.prevnext {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.pn {
+  text-decoration: none;
+  color: inherit;
+  max-width: 48%;
+}
+
+.pn.next { text-align: right; margin-left: auto; }
+
+.pn-label {
+  display: block;
+  font-family: "Cinzel", serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pn-title {
+  display: block;
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 0.98rem;
+  margin-top: 0.2rem;
+}
+
+.pn:hover .pn-title { text-decoration: underline; text-underline-offset: 4px; }
+
+/* ---------- Footer ---------- */
+
+.colophon {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  padding: 1.5rem 1.5rem 2.5rem;
+  border-top: 1px solid var(--line);
+  margin-top: 2rem;
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width: 560px) {
+  nav { flex-wrap: wrap; justify-content: center; }
+  .article { border-left-width: 2px; padding: 1rem 1.1rem 2.5rem; }
+  .hero, .chapter-head { padding-top: 3rem; }
+}
+
+/* ---------- v2 additions: codex, sources, spoilers, cx links ---------- */
+
+a.cx {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 65%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+a.cx:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+.sources {
+  margin-top: 3rem;
+  padding: 1.1rem 1.3rem;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.92rem;
+}
+.sources-tag {
+  display: block;
+  font-family: "Cinzel", serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.sources ul { margin: 0; padding-left: 1.1rem; }
+.sources li { margin: 0.25rem 0; }
+.sources a { color: color-mix(in srgb, var(--text) 75%, var(--accent)); }
+.sources a:hover { color: var(--accent); }
+.sources-note { color: var(--muted); font-style: italic; margin: 0.7rem 0 0; font-size: 0.85rem; }
+
+details.spoiler {
+  margin: 2rem 0;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: 6px;
+  background: var(--ink-2);
+  overflow: hidden;
+}
+details.spoiler summary {
+  cursor: pointer;
+  padding: 0.85rem 1.2rem;
+  font-family: "Cinzel", serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+details.spoiler summary:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+details.spoiler[open] summary { border-bottom: 1px solid var(--line); }
+details.spoiler > p { padding: 0 1.3rem; }
+details.spoiler > p:last-child { padding-bottom: 1rem; }
+
+.codex-jump {
+  font-family: "Cinzel", serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-align: center;
+}
+.codex-jump a { color: var(--accent); text-decoration: none; }
+.codex-jump a:hover { text-decoration: underline; }
+
+.codex-cat h2 {
+  font-size: 1.5rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.4rem;
+}
+.codex-entry {
+  padding: 0.9rem 1.1rem;
+  margin: 0.7rem 0;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-left: 3px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: 5px;
+  scroll-margin-top: 5rem;
+}
+.codex-entry:target {
+  border-color: var(--accent);
+  border-left-color: var(--accent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+.codex-entry h3 {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 0 0 0.35rem;
+  color: var(--text);
+}
+.codex-entry p { margin: 0 0 0.4rem; font-size: 0.98rem; }
+.codex-entry .refs { font-size: 0.8rem; color: var(--muted); margin: 0; }
+.codex-entry .refs span {
+  font-family: "Cinzel", serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.codex-entry .refs a.ref {
+  font-family: "Cinzel", serif;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 3px;
+  padding: 0.05rem 0.45rem;
+  margin-left: 0.2rem;
+}
+.codex-entry .refs a.ref:hover { border-color: var(--accent); }
+
+nav .navlinks a.codexlink { letter-spacing: 0.1em; }
+.chronicle::before { background: var(--grad, linear-gradient(180deg, #9a7bdc, #d9a84e)); }
+.codex-promo { border-style: dashed; }
