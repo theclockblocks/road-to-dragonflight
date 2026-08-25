@@ -7,6 +7,7 @@ sys.path.insert(0, str(BASE))
 from content_a import CHAPTERS_A
 from content_b import CHAPTERS_B
 from codex_data import CODEX, CATS
+from visuals import APPEARANCE, WIKI
 
 CHAPTERS = CHAPTERS_A + CHAPTERS_B
 OUT = str(BASE.parent / "docs")
@@ -42,7 +43,17 @@ if errors:
     for e in errors:
         print(" -", e)
     sys.exit(1)
+for k in list(APPEARANCE) + list(WIKI):
+    if k not in idset:
+        errors.append(f"visuals.py references unknown codex id: {k}")
+missing_wiki = [i for i in ids if i not in WIKI]
+if errors:
+    print("VALIDATION FAILED:")
+    for e in errors:
+        print(" -", e)
+    sys.exit(1)
 print(f"validation OK: {len(CHAPTERS)} chapters, {len(CODEX)} codex entries, all cross-references resolve")
+print(f"appearance descriptions: {len(APPEARANCE)}; wiki links: {len(WIKI)}; entries without wiki link: {missing_wiki or 'none'}")
 
 num_to_slug = {ch["num"]: ch["slug"] for ch in CHAPTERS}
 num_to_title = {ch["num"]: ch["title"] for ch in CHAPTERS}
@@ -128,10 +139,14 @@ for code, label in CATS:
     for (cid, name, cat, desc, refs) in entries:
         reflinks = " ".join(
             f'<a class="ref" href="{num_to_slug[r]}.html" title="{num_to_title[r]}">{r}</a>' for r in refs)
+        look = APPEARANCE.get(cid)
+        lookhtml = f'<p class="look">{look}</p>' if look else ""
+        wiki = WIKI.get(cid)
+        wikihtml = f' <a class="wiki" href="{wiki}" target="_blank" rel="noopener">Art &amp; full article ↗</a>' if wiki else ""
         cards.append(f'''<article class="codex-entry" id="{cid}">
 <h3>{name}</h3>
-<p>{desc}</p>
-<p class="refs"><span>Chapters:</span> {reflinks}</p>
+{lookhtml}<p>{desc}</p>
+<p class="refs"><span>Chapters:</span> {reflinks}{wikihtml}</p>
 </article>''')
     cat_secs.append(f'<section class="codex-cat"><h2 id="cat-{code}">{label}</h2>{"".join(cards)}</section>')
 
@@ -314,6 +329,21 @@ details.spoiler > p:last-child { padding-bottom: 1rem; }
   margin-left: 0.2rem;
 }
 .codex-entry .refs a.ref:hover { border-color: var(--accent); }
+
+.codex-entry .look {
+  font-style: italic;
+  color: color-mix(in srgb, var(--text) 72%, var(--accent));
+  font-size: 0.95rem;
+  margin: 0 0 0.45rem;
+}
+.codex-entry .refs a.wiki {
+  font-family: "Cinzel", serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-decoration: none;
+  margin-left: 0.6rem;
+}
+.codex-entry .refs a.wiki:hover { color: var(--accent); }
 
 nav .navlinks a.codexlink { letter-spacing: 0.1em; }
 .chronicle::before { background: var(--grad, linear-gradient(180deg, #9a7bdc, #d9a84e)); }

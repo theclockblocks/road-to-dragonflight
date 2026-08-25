@@ -449,6 +449,21 @@ details.spoiler > p:last-child { padding-bottom: 1rem; }
 }
 .codex-entry .refs a.ref:hover { border-color: var(--accent); }
 
+.codex-entry .look {
+  font-style: italic;
+  color: color-mix(in srgb, var(--text) 72%, var(--accent));
+  font-size: 0.95rem;
+  margin: 0 0 0.45rem;
+}
+.codex-entry .refs a.wiki {
+  font-family: "Cinzel", serif;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-decoration: none;
+  margin-left: 0.6rem;
+}
+.codex-entry .refs a.wiki:hover { color: var(--accent); }
+
 nav .navlinks a.codexlink { letter-spacing: 0.1em; }
 .chronicle::before { background: var(--grad, linear-gradient(180deg, #9a7bdc, #d9a84e)); }
 .codex-promo { border-style: dashed; }

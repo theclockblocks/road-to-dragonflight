@@ -15,29 +15,43 @@ generator/          Python generator — the source of truth
   content_a.py      chapters I–VII   (list of dicts: slug/num/accent/era/title/sub/content/sources)
   content_b.py      chapters VIII–XIV
   codex_data.py     CODEX list of (id, name, category, description, [chapter numerals])
+  visuals.py        APPEARANCE dict (one-sentence looks, prepended to codex entries in italics)
+                    and WIKI dict (warcraft.wiki.gg article per entry, rendered as an
+                    "Art & full article" link — the wiki page's infobox art is the visual
+                    reference; do NOT embed Blizzard's images in the site itself)
   style_base.css    base stylesheet; build.py copies it and appends v2 additions
 docs/               the built site (16 HTML pages + style.css + .nojekyll) — serve this
 ```
 
-## Deployment — done (2026-08-25)
+## Deployment — live (updated 2026-08-25)
 
 - **Live site:** https://theclockblocks.github.io/road-to-dragonflight/
 - **Repo:** https://github.com/theclockblocks/road-to-dragonflight (public)
-- **Pages source:** `main` branch, `/docs` folder. First build succeeded on commit `48e08af`.
-- Collaborators: none added yet.
+- **Pages source:** `main` branch, `/docs` folder.
+- Collaborators: none, and none wanted — the intended readers don't have GitHub
+  accounts, so the public link is the whole distribution plan.
 
 To publish an update: edit the generator modules, run `python generator/build.py`,
 then commit and push `docs/`. Pages rebuilds automatically on push to `main`.
 
-### Windows note
-`build.py` writes its output explicitly as **UTF-8 with LF newlines**. Keep it that
-way. Before this was pinned, the script used the platform default codec, so on
-Windows it crashed partway through the Codex (`UnicodeEncodeError` on `✦`) and left
-mojibake — `—` rendered as `?` — in the chapter files it had already written.
-`.gitattributes` pins `* text=auto eol=lf` for the same reason: without it, the
-global `core.autocrlf=true` makes every rebuild look like a full-file diff.
-A clean rebuild should be **byte-identical** to the committed `docs/` — if it isn't,
-something is wrong with the encoding settings, not the content.
+**This repo has no `V1/` or `Site V2/` folders — do not add any.** GitHub Pages can
+only serve `/` or `/docs` at the repo root, so a nested version folder cannot be
+published. Versions live in git history instead: the pre-visual-layer site is
+tagged **`v1`**. Start the next revision by editing in place; git holds the old one.
+
+### Windows note — do not undo this
+`build.py` must write its output as **UTF-8 with LF newlines** (all four `open()`
+calls). Keep it that way. With the platform default codec, the script crashes
+partway through the Codex on Windows (`UnicodeEncodeError` on `✦`, and now `↗`)
+and leaves mojibake — `—` rendered as `?` — in the chapters it already wrote.
+This has now regressed once: the V2 working copy was branched from a pre-fix
+`build.py` and the fix had to be re-applied. If you hand a copy of this project to
+another machine or another session, check those four `open()` calls first.
+
+`.gitattributes` pins `* text=auto eol=lf` for the same reason: without it, a global
+`core.autocrlf=true` makes every rebuild look like a full-file diff and hides real
+content changes. A clean rebuild should be **byte-identical** to the committed
+`docs/` — if it isn't, suspect encoding settings before content.
 
 ## Maintenance rules (for future sessions)
 - **Never hand-edit files in `docs/`** except for trivial typo fixes the user asks for
@@ -50,7 +64,10 @@ something is wrong with the encoding settings, not the content.
 - New chapter = new dict in a content module (keep the accent color distinct; the
   homepage timeline gradient is generated from chapter order). New codex entry =
   new tuple in `codex_data.py`; link it from chapter text with
-  `<a class="cx" href="codex.html#the-id">Name</a>`.
+  `<a class="cx" href="codex.html#the-id">Name</a>`. Give it a one-sentence
+  `APPEARANCE` line and a `WIKI` url in `visuals.py` too — `build.py` fails on a
+  visuals key that matches no codex id, and reports any entry missing a wiki link.
+  Describe the art in prose; never embed Blizzard's images in the site.
 - Audience is WoW-oblivious: plain language, explain everything, no unexplained
   jargon. No FFXIV references anywhere on the site (user's explicit request).
 - Chapter XIV's spoiler content stays inside the `<details class="spoiler">` block.
