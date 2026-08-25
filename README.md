@@ -4,7 +4,7 @@ A fan-made World of Warcraft lore chronicle — fourteen chapters from the birth
 the cosmos to the eve of Dragonflight, with a cross-referenced Codex of 118
 characters, places, artifacts, and terms. Written for readers starting from zero.
 
-**Live site:** served from `docs/` via GitHub Pages.
+**Live site:** https://theclockblocks.github.io/road-to-dragonflight/
 **Editing:** see `HANDOFF.md` — edit the generator modules, run
 `python3 generator/build.py`, commit.
 

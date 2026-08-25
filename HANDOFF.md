@@ -19,16 +19,25 @@ generator/          Python generator — the source of truth
 docs/               the built site (16 HTML pages + style.css + .nojekyll) — serve this
 ```
 
-## Your job
-1. Verify `gh auth status` (or git credentials). If not authenticated, stop and ask the user to log in — do not handle credentials yourself.
-2. Create a **public** repo named `road-to-dragonflight` (public is required for free GitHub Pages).
-3. Commit everything in this folder to `main` and push.
-4. Enable GitHub Pages serving from `main` branch, `/docs` folder. Via CLI:
-   `gh api -X POST repos/{owner}/road-to-dragonflight/pages -f "source[branch]=main" -f "source[path]=/docs"`
-   (If Pages was auto-enabled or the call 409s, use PUT on the same endpoint to update the source.)
-5. Wait for the first Pages build, then confirm the site loads at
-   `https://<owner>.github.io/road-to-dragonflight/` and report that URL to the user.
-6. Ask the user if they want their friend added as a collaborator; if given a username, add with push access.
+## Deployment — done (2026-08-25)
+
+- **Live site:** https://theclockblocks.github.io/road-to-dragonflight/
+- **Repo:** https://github.com/theclockblocks/road-to-dragonflight (public)
+- **Pages source:** `main` branch, `/docs` folder. First build succeeded on commit `48e08af`.
+- Collaborators: none added yet.
+
+To publish an update: edit the generator modules, run `python generator/build.py`,
+then commit and push `docs/`. Pages rebuilds automatically on push to `main`.
+
+### Windows note
+`build.py` writes its output explicitly as **UTF-8 with LF newlines**. Keep it that
+way. Before this was pinned, the script used the platform default codec, so on
+Windows it crashed partway through the Codex (`UnicodeEncodeError` on `✦`) and left
+mojibake — `—` rendered as `?` — in the chapter files it had already written.
+`.gitattributes` pins `* text=auto eol=lf` for the same reason: without it, the
+global `core.autocrlf=true` makes every rebuild look like a full-file diff.
+A clean rebuild should be **byte-identical** to the committed `docs/` — if it isn't,
+something is wrong with the encoding settings, not the content.
 
 ## Maintenance rules (for future sessions)
 - **Never hand-edit files in `docs/`** except for trivial typo fixes the user asks for
