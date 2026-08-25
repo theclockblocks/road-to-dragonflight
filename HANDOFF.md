@@ -81,6 +81,16 @@ content changes. A clean rebuild should be **byte-identical** to the committed
   It deliberately ignores links with a `target` (the wiki links) and modifier-clicks,
   so open-in-new-tab keeps working, and it only matches `codex.html#...`, so the
   `#cat-XX` category jumps are untouched.
+- `build.py` writes `style.css` and `codex-popup.js` **before** it generates the
+  pages, hashes them, and references them as `style.css?v=<hash>`. Keep that order —
+  the pages need the hashes. Pages serves assets with `max-age=600` and phones cache
+  them longer, so without the hash a CSS change can sit unseen behind a stale copy
+  for a long time. The hash is content-derived, so rebuilds stay byte-stable.
+- Mobile layout: keep the document from ever being wider than the viewport. The
+  chapter nav is 15 links and has to scroll inside itself (`min-width: 0` plus
+  `overflow-x: auto`); when it stretched the page instead, the page panned sideways
+  and dragged the fixed popup off-screen. If something looks clipped on a phone,
+  check `document.documentElement.scrollWidth` against `innerWidth` first.
 - Chapter XIV's spoiler content stays inside the `<details class="spoiler">` block.
 - Content accuracy matters to the user: for new lore claims, verify against
   warcraft.wiki.gg and add the page to that chapter's `sources` list.
