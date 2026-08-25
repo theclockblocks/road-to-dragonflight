@@ -82,6 +82,7 @@ def shell(title, body, accent="#c9a45c"):
 <title>{title}</title>
 {FONTS}
 <link rel="stylesheet" href="style.css">
+<script src="codex-popup.js" defer></script>
 </head>
 <body style="--accent:{accent}">
 {body}
@@ -218,6 +219,7 @@ with open(f"{OUT}/index.html", "w", encoding="utf-8", newline="\n") as f:
 
 # ---------------- stylesheet ----------------
 shutil.copy(str(BASE / "style_base.css"), f"{OUT}/style.css")
+shutil.copy(str(BASE / "codex_popup.js"), f"{OUT}/codex-popup.js")
 EXTRA = """
 /* ---------- v2 additions: codex, sources, spoilers, cx links ---------- */
 
@@ -344,6 +346,111 @@ details.spoiler > p:last-child { padding-bottom: 1rem; }
   margin-left: 0.6rem;
 }
 .codex-entry .refs a.wiki:hover { color: var(--accent); }
+
+/* ---------- Codex popup ---------- */
+
+dialog.cxpop {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(34rem, calc(100% - 2rem));
+  padding: 0;
+  border: 0;
+  background: transparent;
+  max-width: none;
+  max-height: none;
+  height: auto;
+  overflow: hidden;   /* the UA gives dialog overflow:auto; .cxpop-body does the scrolling */
+  color: var(--text);
+}
+dialog.cxpop::backdrop {
+  background: color-mix(in srgb, var(--ink) 80%, black);
+  backdrop-filter: blur(2px);
+}
+.cxpop-inner {
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  padding: 0.5rem 1.3rem 1rem;
+}
+@keyframes cxpop-rise {
+  from { transform: translateY(14px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+dialog.cxpop[open] .cxpop-inner { animation: cxpop-rise 0.18s ease-out; }
+
+.cxpop-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.2rem;
+  margin: 0 -0.4rem 0.2rem;
+}
+.cxpop-back, .cxpop-close {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-family: "Cinzel", serif;
+  cursor: pointer;
+  padding: 0.5rem 0.7rem;      /* generous tap target */
+  line-height: 1;
+}
+.cxpop-back { font-size: 0.75rem; letter-spacing: 0.08em; }
+.cxpop-close { font-size: 1.5rem; margin-left: auto; }
+.cxpop-back:hover, .cxpop-close:hover { color: var(--accent); }
+
+.cxpop-body { overflow-y: auto; outline: none; -webkit-overflow-scrolling: touch; }
+.cxpop-wait { color: var(--muted); font-style: italic; margin: 0.5rem 0 1rem; }
+
+/* the cloned entry is already inside the popup card — strip its own card */
+.cxpop .codex-entry {
+  border: 0;
+  background: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+.cxpop .codex-entry h3 { font-size: 1.15rem; margin-bottom: 0.4rem; }
+.cxpop .codex-entry p { font-size: 1rem; }
+
+.cxpop-foot {
+  margin: 0.9rem 0 0;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.78rem;
+}
+.cxpop-full {
+  font-family: "Cinzel", serif;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.06em;
+}
+.cxpop-full:hover { color: var(--accent); }
+
+/* Phones: a bottom sheet, thumb-reachable, instead of a centred box. */
+@media (max-width: 700px) {
+  dialog.cxpop {
+    inset: auto 0 0 0;
+    margin: 0;
+    width: 100%;
+  }
+  .cxpop-inner {
+    max-height: 85vh;
+    border-radius: 14px 14px 0 0;
+    border-left-width: 1px;
+    border-top: 3px solid var(--accent);
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+  @keyframes cxpop-rise {
+    from { transform: translateY(100%); }
+    to   { transform: none; }
+  }
+}
 
 nav .navlinks a.codexlink { letter-spacing: 0.1em; }
 .chronicle::before { background: var(--grad, linear-gradient(180deg, #9a7bdc, #d9a84e)); }

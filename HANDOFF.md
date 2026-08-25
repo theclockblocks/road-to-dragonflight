@@ -20,6 +20,8 @@ generator/          Python generator — the source of truth
                     "Art & full article" link — the wiki page's infobox art is the visual
                     reference; do NOT embed Blizzard's images in the site itself)
   style_base.css    base stylesheet; build.py copies it and appends v2 additions
+  codex_popup.js    copied to docs/codex-popup.js; opens codex entries in an
+                    overlay instead of navigating away (see below)
 docs/               the built site (16 HTML pages + style.css + .nojekyll) — serve this
 ```
 
@@ -70,6 +72,15 @@ content changes. A clean rebuild should be **byte-identical** to the committed
   Describe the art in prose; never embed Blizzard's images in the site.
 - Audience is WoW-oblivious: plain language, explain everything, no unexplained
   jargon. No FFXIV references anywhere on the site (user's explicit request).
+- The Codex popup (`codex_popup.js`) is **progressive enhancement, and must stay that
+  way**: every codex link keeps a real `href="codex.html#id"`. The script intercepts
+  the click, fetches `codex.html` once, and shows the entry in a `<dialog>`; if JS is
+  off, the fetch fails, or `<dialog>` is unsupported, the link just navigates as it
+  always did. Never replace those hrefs with `#` or a JS-only handler — that would
+  make the Codex unreachable for anyone the script doesn't run for.
+  It deliberately ignores links with a `target` (the wiki links) and modifier-clicks,
+  so open-in-new-tab keeps working, and it only matches `codex.html#...`, so the
+  `#cat-XX` category jumps are untouched.
 - Chapter XIV's spoiler content stays inside the `<details class="spoiler">` block.
 - Content accuracy matters to the user: for new lore claims, verify against
   warcraft.wiki.gg and add the page to that chapter's `sources` list.
