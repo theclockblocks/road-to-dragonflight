@@ -8,6 +8,30 @@ Chapters link into the Codex via `<a class="cx" href="codex.html#id">` links;
 Codex entries link back to chapters. Every chapter cites its sources
 (warcraft.wiki.gg + the Chronicle books).
 
+## What this site is *for* (vs. the addon)
+
+There are two projects narrating this lore, and they have different jobs. Settled
+2026-08-26; do not relitigate.
+
+- **This site is the reading layer.** The deep past, and bringing a newcomer up to
+  Dragonflight. Read like a book, front to back, before or alongside playing.
+- **The WowMSQ addon (`E:\test\WowMSQ`) is the playing layer.** A player learns
+  the lore *as they play*: a hands-on narrative about the events happening around
+  them, leading naturally to quest hubs, dungeons, and raids, answering "why are
+  we here" at each stop.
+
+Consequences for editing:
+- Chapters **I–VI are the site's strongest** and should not be "enriched" from the
+  addon. A full comparison of the eight overlapping chapters found the site equal
+  or better there — the addon's Part 0 was written *from* this site.
+- Chapters **VII–VIII were ported up from the addon's Part I** (2026-08-26),
+  because the Warcraft I–III spine is reading material this site had compressed.
+  That was a one-off with a reason, not a standing pattern.
+- **Do not bulk-port the addon's Parts II–IV.** That prose is tied to quest hubs
+  and play order; it belongs in the addon.
+- The site stops at the eve of Dragonflight **by design**. The modern era
+  (Dragonflight, The War Within, Midnight) is deliberately deferred.
+
 ## Repo layout
 ```
 generator/          Python generator — the source of truth
