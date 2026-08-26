@@ -3,7 +3,7 @@
 ## What this is
 A static, fan-made World of Warcraft lore chronicle built for two WoW-newcomers:
 14 chapters (birth of the cosmos → eve of the Dragonflight expansion) plus a
-cross-referenced Codex of 118 characters, peoples, places, artifacts, and terms.
+cross-referenced Codex of 172 characters, peoples, places, artifacts, and terms.
 Chapters link into the Codex via `<a class="cx" href="codex.html#id">` links;
 Codex entries link back to chapters. Every chapter cites its sources
 (warcraft.wiki.gg + the Chronicle books).
@@ -72,6 +72,15 @@ content changes. A clean rebuild should be **byte-identical** to the committed
   Describe the art in prose; never embed Blizzard's images in the site.
 - Audience is WoW-oblivious: plain language, explain everything, no unexplained
   jargon. No FFXIV references anywhere on the site (user's explicit request).
+- **Not every codex entry is linked from a chapter, and that is deliberate.** 39 of
+  the 172 are reference-only: figures a reader meets in the *game* (Blackrock, the
+  Scarlet Crusade, VanCleef, Tirion) but not in a fourteen-chapter overview. They
+  exist because the codex is also the upstream source for the WowMSQ addon's
+  `Chronicle/Data/Codex.lua` (see that repo's HANDOFF, roadmap step 3): the site
+  stays canonical and its `build.py` validates the cross-refs. `build.py` does not
+  require an entry to be chapter-linked — only that every link resolves. When adding
+  an entry, still link it from chapter prose *if the prose naturally names it*; don't
+  bend a chapter to accommodate a codex entry.
 - The Codex popup (`codex_popup.js`) is **progressive enhancement, and must stay that
   way**: every codex link keeps a real `href="codex.html#id"`. The script intercepts
   the click, fetches `codex.html` once, and shows the entry in a `<dialog>`; if JS is

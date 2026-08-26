@@ -407,7 +407,7 @@ codex_body = f"""{nav("codex")}
 <header class="chapter-head">
   <p class="eyebrow"><span class="num">✦</span>Reference index</p>
   <h1>The Codex</h1>
-  <p class="sub">Every character, people, place, artifact, and term linked from the chapters — with the chapters where each appears. Underlined names throughout the site lead here; your browser's back button returns you to where you were reading.</p>
+  <p class="sub">Every character, people, place, artifact, and term the chapters link to — plus a deeper bench of names you'll run into in the game itself but won't meet in a fourteen-chapter overview. Each entry lists the chapters it belongs to. Underlined names throughout the site lead here; your browser's back button returns you to where you were reading.</p>
 </header>
 <main class="article codex">
 <p class="codex-jump">{cat_nav}</p>
